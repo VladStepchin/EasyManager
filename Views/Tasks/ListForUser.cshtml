@@ -1,0 +1,164 @@
+﻿
+@model IEnumerable<EasyManager.Task>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+==
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+    <h1 class="header-list-text">List of tasks assigned to you</h1>
+ <div id="tableBlock" class="action-buttons list-of-tasks"></div>
+
+<script>
+
+    $(document).ready(function () {
+        $('.collapsible').collapsible();
+        getTaskList();
+        showUserFriendlyData();
+    });
+
+    var userEmail = '@User.Identity.Name'
+
+    function getTaskList() {
+        $.ajax({
+            url: '/api/tasks/' + '-1',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                showTaskList(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                console.log(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function showUserFriendlyData() {
+        $.ajax({
+            url: '/api/projects/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyProject(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/taskstatus/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyStatuses(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/taskpriorities/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyPriorities(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/tasktypes/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyTypes(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+
+        $.ajax({
+            url: '/api/people/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyUser(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+
+    function showTaskList(data) {
+        let strResult = "<ul class='collapsible expandable' id='myUL'>";
+        $.each(data, function (index, task) {
+            strResult += "<li><div class='collapsible-header'><p><span class='list-content'><b>Name: </b>" + "      " + task.Summary + "      <b>Assignee: </b><span data-item='" + task.AsigneeID + "' class='assignee-view'></span> Status:<span data-item='" + task.Status + "' class='status-view chip'></span><b> Logged time: " + task.Logged + "</span></p></div>" +
+                "<div class='collapsible-body'><table><tr><td><b>Проект:</b></td><td id='super' class='projectId' data-item='" + task.ProjectID + "' >" + task.ProjectID +"</td></tr>" +
+                "<tr class='no-strip'><td><b>Тип:</b></td><td class='type-view' data-item='" + task.Type + "'>" + task.Type + "</td></tr class='no-strip'>" + "<tr><td><b>Пріорітет:</b></td><td class='priority-view' data-item='" + task.Priority + "'>" + task.Priority + "</td></tr>" + "<tr class='no-strip'><td><b>Статус:</b></td><td class='status-view' data-item='" + task.Status + "'>" + task.Status + "</td></tr>" + "<tr class='no-strip'><td><b>Опис:</b></td><td>" + task.Description + "</td></tr>" +
+                "<tr class='no-strip'><td><b>Дата початку:</b></td><td>" + concatDate(task.Created) + "</td></tr>" + "<tr class='no-strip'><td><b>Дата кінця:</b></td><td>" + concatDate(task.DueDate) + "</td></tr class='no-strip'>" + "<tr class='no-strip'><td><b>Оцінка годин:</b></td><td>" + task.Estimated + "</td></tr>" + "<tr class='no-strip'><td><b>Залоговано годин:</b></td><td>" + task.Logged + "</td></tr>" + "<tr class='no-strip'><td><b>Відповідальний:</b></td><td class='assignee-view' data-item='" + task.AsigneeID + "'>" + task.AsigneeID + "</td>" +
+                "</table></div></li>";
+        });
+        strResult += "</ul>";
+        $("#tableBlock").html(strResult);
+
+        var elems = document.querySelectorAll('.collapsible');
+        var instances = M.Collapsible.init(elems, { accordion: false });
+    }
+
+    function makeUserFriendlyProject(data) {
+        data.forEach((item, i, arr) => {
+            let listSelector2 = "td[data-item='" + item.ID + "'].projectId";
+            $(listSelector2).html(item.Summary)
+        })
+     }
+
+
+    function makeUserFriendlyStatuses(data) {
+        data.forEach((item, i, arr) => {
+            let listSelector = "span[data-item='" + item.ID + "'].status-view";
+            let listSelector2 = "td[data-item='" + item.ID + "'].status-view";
+            $(listSelector).html(item.Name)
+            $(listSelector2).html(item.Name)
+        })
+    }
+
+    function makeUserFriendlyPriorities(data) {
+        data.forEach((item, i, arr) => {
+            let listSelector2 = "td[data-item='" + item.ID + "'].priority-view";
+            $(listSelector2).html(item.Name)
+        })
+    }
+
+    function makeUserFriendlyTypes(data) {
+        data.forEach((item, i, arr) => {
+            let listSelector2 = "td[data-item='" + item.ID + "'].type-view";
+            $(listSelector2).html(item.Name)
+        })
+    }
+
+        function makeUserFriendlyUser(data){
+            data.forEach((item, i, arr) => {
+                let listSelector = "span[data-item='" + item.ID + "'].assignee-view";
+                let listSelector2 = "td[data-item='" + item.ID + "'].assignee-view";
+                $(listSelector).html(item.Login)
+                $(listSelector2).html(item.Login)
+            })
+    }
+
+</script>

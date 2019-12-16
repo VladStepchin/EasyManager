@@ -1,0 +1,191 @@
+﻿@model IEnumerable<EasyManager.Project>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="actual-content">
+    <div class="create-new">
+        <a class="btn-floating btn-large waves-effect waves-light red open-create"><i class="material-icons">add</i></a>
+    </div>
+    <div class="project-list">
+        <div class="project-content">
+        </div>
+    </div>
+</div>
+
+
+    <div id="modal1"  class="modal-content modal modal-create" data-target="modal1">
+        <h4 class="text-header"><b>New project</b></h4>
+        <table>
+            <tr ><input type="hidden" id="addId" /></tr>
+            <tr class="no-strip"><td><label>Name: </label></td><td><input type="text" id="addProjectSummary" class="custom" required="true"/></td></tr>
+            <tr class="no-strip"><td><label>Start date: </label></td><td><input type="date" id="addDateStart" class="custom"/></td></tr>
+            <tr class="no-strip"><td><label>Deadline: </label></td><td><input type="date" id="addDateEnd" class="custom"/></td></tr>
+            <tr class="no-strip"><td><label>Status: </label></td><td>
+                    <select class="status-edit visible" id="addProjectStatus">
+
+                    </select>
+                 </td></tr>
+            <tr class="no-strip"><td><label>Creator: </label></td><td><p id="addOwner">@User.Identity.Name</p></td></tr>
+            <tr class="no-strip"><td><label>Short description: </label></td><td><input type="text" id="addDescription" class="custom"/></td></tr>
+        </table>
+        <div class="activities">
+            <button id="addProject" class="waves-effect waves-light btn save">Create</button>
+            <button class="waves-effect waves-light red darken-1 btn decline-add">Decline</button>
+        </div>
+    </div>
+
+
+<script>
+
+    
+    $(document).ready(function () {
+        showProjectsForUser() 
+        showStatuses()
+    });
+
+    let modalOnCreate = $('.modal-create');
+
+    $(".open-create").on("click", function () {
+        modalOnCreate.css("display", "block")
+        $(".modal-backdrop").css("display", "block")
+        modalOnCreate.modal()
+    });
+
+    $("#addProject").on("click", function () {
+        AddProject();
+    })
+
+    $(".decline-add").on("click", function () {
+        modalOnCreate.css("display", "none")
+        $(".modal-backdrop").css("display","none")
+    })
+
+    function showProjectsForUser(){
+        $.ajax({
+            url: '/api/projects/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                WriteResponse(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function showStatuses() {
+        $.ajax({
+            url: '/api/projectstatus',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                SubstituteEditStatuses(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function getTasks(id) {
+        window.location.href = "/Tasks/Index/" + id
+    }
+
+    function SubstituteEditStatuses(data) {
+        strOptions = '';
+        data.forEach((item, i, arr) => {
+            strOptions += "<option value ='" + item.ID + "'>" + item.Name + "</option>"
+        })
+
+        $("#addProjectStatus").html(strOptions);
+
+    }
+
+    function WriteResponse(projects) {
+        debugger
+       
+        let strResult = "";
+        $.each(projects, function (index, project) {
+            console.log("For response: " + project.Summary)
+            strResult += "<div class='card blue-grey darken-3 white-text z-depth-5'><div onclick='getTasks(" + project.ID + ")' class='card-content' style='text-align:center;'><span class='card-title'>" + project.Summary + "</span><p>" + project.Description + "</p><p class='person-view' data-item=" + project.Owner + "> Owner: " + project.Owner
+                + "</p><p class='logged-view' data-item=" + project.Logged + "> Logged: " + project.Logged
+                + "</p><p>Creation Date: " + concatDate(project.DateStart) + "</p> <div class='chip-status'><p class='Projectstatus-view chip statusInList' data-item = '" + project.Status + "'>" + project.Status + "</p></div></div>" +
+                "<div class='card-action'><a class='waves-effect waves-light btn red darken-1 remove-project' id='delItem' data-item='" + project.ID + "' onclick='remove(this)' >Remove</a>"
+                + "</div></div>";
+        });
+        $(".project-list").html(strResult);
+
+        $.ajax({
+            url: '/api/projectstatus/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                SubstituteStatuses(data) 
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+        
+    }
+    function SubstituteStatuses(data) {
+        data.forEach((item, i, arr) => {
+            let listSelector = "p[data-item='" + item.ID + "'].Projectstatus-view.chip.statusInList";
+            $(listSelector).html(item.Name)
+        })
+    }
+
+    function remove(card) {
+        var projectID = card.attributes['data-item'].nodeValue;
+
+        $.ajax({
+            url: '/api/projects/' + projectID,
+            type: 'DELETE',
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                showProjectsForUser() 
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+
+    function AddProject() {
+        var project = {
+            Summary: $('#addProjectSummary').val(),
+            DateStart: $('#addDateStart').val(),
+            DateEnd: $('#addDateEnd').val(),
+            Status: $('#addProjectStatus').val(),
+            Owner: $('#addOwner').text(),
+            Description: $('#addDescription').val(),
+
+        };
+        $.ajax({
+            url: '/api/projects/',
+            type: 'POST',
+            data: JSON.stringify(project),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                console.log(data)
+                window.location.href = "/Home/Index";
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+        modalOnCreate.modal('close')
+    }
+    
+
+</script>

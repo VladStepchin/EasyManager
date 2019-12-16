@@ -1,0 +1,255 @@
+﻿body {
+    background-image: url('media/images/background.png');
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+body::before {
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    background: rgba(93,84,240,0.5);
+    background: -webkit-linear-gradient(left, rgba(0,168,255,0.5), rgba(185,0,255,0.5));
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+    width:100%;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will trunte terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.hidden {
+    display: none;
+}
+
+label {
+    margin-bottom: 10px;
+    display: block;
+}
+
+nav#main {
+    background-color: #5d6390;
+    position: absolute;
+    z-index: 2;
+    height: 68px;
+}
+
+#btn-logout {
+    background: #1a4fe4 !important;
+}
+
+.howdy {
+    color: white;
+    font-size: 24px;
+    padding-right: 35px;
+}
+
+
+.card {
+    margin-right: 20px;
+    max-width: 350px;
+    float: left;
+    min-width: 350px;
+}
+
+.blue-grey.darken-3 {
+    background: #40397a !important;
+}
+
+.actual-content {
+    margin-top: 6%;
+}
+.brand-logo {
+    padding-top: 5px;
+    padding-left: 5px;
+}
+.create-new {
+    float: left;
+    margin-top: 8%;
+    margin-right: 5%;
+}
+#content-container{
+    margin-left:1%;
+}
+select#addStatus {
+    display:block;
+}
+input, label {
+    font-size:1.5rem;
+}
+input.custom {
+    font-size:1.5rem;
+}
+#modal1,#modal2, #modal3 {
+    padding: 2% 2% 0% 2%;
+    position:absolute;
+}
+
+.modal {
+    width: 40%;
+}
+#modal1 {
+    height:390px;
+}
+#tableBlock {
+    font-family: arial;
+    font-size: 1.5em;
+    display: inline-block;
+    min-width: 54%;
+    text-align: center;
+    margin-left: 21%;
+}
+
+.z-depth-5 {
+    box-shadow: none;
+}
+.card-content:hover {
+    box-shadow: 0 27px 24px 0 rgba(0,0,0,0.1), 0 40px 77px 0 rgba(0,0,0,0.26);
+}
+.chip {
+    background:#861d76;
+}
+
+.card-content {
+ line-height:30px;
+}
+
+.collapsible-body {
+    background: #bf82f6;
+    border-bottom: 1px solid #532c75;
+    padding: 2% 0% 3% 2%;
+}
+
+.container {
+    max-width:1890px;
+}
+
+.register-text {
+    text-align:right;
+    padding-bottom:10%;
+    z-index:10000;
+}
+.register-text:hover {
+    color:blue;
+    text-decoration:underline;
+}
+.back {
+    display:none;
+}
+nav ul li {
+    margin-right:16px;
+}
+.brand-logo {
+    margin-left:1%;
+}
+.brand-logo:hover {
+    text-decoration:none;
+}
+.top-button {
+    background:#861d76;
+}
+.top-button:hover {
+    background: #861d76;
+}
+i.material-icons.left.custom-icon {
+    line-height: 55px;
+}
+select {
+    display:block;  
+}
+.page-content {
+    margin-top: 5%;
+}
+#chooseUser, #chooseUser-2, #chooseUser-3 {
+    display: inline-block;
+}
+.chart {
+    width: 750px;
+    height: 468px;
+    background: white;
+}
+.chart {
+    display:none;
+}
+#interpolate {
+    background:#861d76; 
+}
+#interpolate:hover,#draw:hover {
+    color:white;
+}
+input[type="text"], input[type="password"] {
+    font-size: 1.5rem;
+}
+.login-input {
+    width: 90%;
+}
+input#Email, input#Password {
+    margin-left:12%;
+}
+.login-label {
+   margin-top:10px;
+}
+.pos-center {
+    margin-left:8%;
+}
+.login-text {
+    margin-left:12%;
+}
+.chart {
+    display: block;
+    float:left;
+    margin:5px;
+}
+.graph-content {
+    overflow-y:auto;
+    height:65vh;
+}
+
+a:hover {
+    color:white;
+}
+.remove-project {
+    margin-left:32%;
+    z-index:10000px;
+}
+.collapsible-header {
+    background: #5d6390;
+    border-bottom: 1px solid #140110 !important;
+}
+.collapsible {
+    border-top: 1px solid #5d6390 !important;
+    border-right: 1px solid #5d6390 !important;
+    border-left: 1px solid #5d6390 !important;
+}
+#modal2 {
+    height:310px;
+}
+
+button#btn-log:active {
+    background: #861d76;
+}
+.purple.darken-2 {
+    background: #861d76 !important;
+}
+.header-list-text {
+    text-align: center;
+    margin-top: 3%;
+}

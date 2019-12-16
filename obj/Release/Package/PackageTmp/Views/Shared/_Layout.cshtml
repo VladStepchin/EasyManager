@@ -1,0 +1,320 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/css/materialize.min.css">
+    <link rel="shortcut icon" type="image/png" href="~/Content/media/images/favicon.icon" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    @Styles.Render("~/Content/css")
+</head>
+<body>
+    <nav id="main">
+        <div class="nav-wrapper">
+            @Html.ActionLink("EasyManager", "Index", "Home", new { area = "" }, new { @class = "brand-logo" })
+            @if (User.Identity.IsAuthenticated)
+            {
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    @if (User.IsInRole("Manager"))
+                    {
+                        <li>
+                            <p class="howdy">Howdy, @User.Identity.Name</p>
+                        </li>
+                        <li>
+                            <button class="waves-effect waves-light btn-large top-button" onclick="window.location.href='/Home/Chart'">
+                                <i class="material-icons left custom-icon">
+                                    graphic_eq
+                                </i>Check performance
+                            </button>
+                        </li>
+
+                    <li>
+                        <button id="topCreateTask" class="waves-effect waves-light btn-large top-button task-create" onclick="createTopTask()">
+                            <i class="material-icons left custom-icon">
+                                filter_none
+                            </i>Create task
+                        </button>
+                    </li>
+                    }
+                    <li class="log">
+                        <button id="btn-log" class="waves-effect waves-light btn-large top-button purple darken-2">
+                            <i class="material-icons left custom-icon">timer</i>Log time
+                        </button>
+                    </li>
+                    <li>
+                        <button id="btn-logout" class="waves-effect waves-light btn-large top-button" onclick="Logout()">
+                            <i class="material-icons left custom-icon">directions_run</i>Logout
+                        </button>
+                    </li>
+                </ul>
+            }
+            </div>
+    </nav>
+                
+    <div id="modal2" class="modal-content modal modal-log" data-target="modal1">
+        <h4 class="text-header"><b>Log time</b></h4>
+        <table>
+            <tr class="no-strip"><input type="hidden" id="addId" /></tr>
+            <tr class="no-strip"><td><label>Amount of time (hours): </label></td><td><input type="number" id="addTime" class="custom" /></td></tr>
+            <tr class="no-strip">
+                <td><label>Task: </label></td>
+                <td>
+                    <select class="task-edit visible" id="addTaskTable"></select>
+                </td>
+            </tr>
+            <tr class="no-strip"><td><label>User: </label></td><td><p id="addPerson">@User.Identity.Name</p></td></tr>
+            <tr class="no-strip"><td><label>Lod date: </label></td><td><input type="date" id="addTimeLogged" class="custom" /></td></tr>
+        </table>
+        <div class="activities">
+            <button id="addLog" class="waves-effect waves-light btn save">Log</button>
+            <button class="waves-effect waves-light red darken-1 btn decline-add">Cancel</button>
+        </div>
+    </div>
+
+    <div id="modal3" class="modal-content modal" data-target="modal3">
+        <h4 class="text-header"><b>Create task</b></h4>
+        <table>
+            <tr><input type="hidden" id="addId" /></tr>
+            <tr><td><label>Project name: </label></td><td><select class="projectId-edit visible validate" id="addProjectId"></select></td></tr>
+            <tr><td><label>Summary: </label></td><td><input type="text" id="addSummary" class="validate" /></td></tr>
+            <tr><td><label>Type: </label></td><td><select class="type-edit visible validate" id="addType"></select></td></tr>
+            <tr><td><label>Priority: </label></td><td><select class="priority-edit visible validate" id="addPriority"></select></td></tr>
+            <tr><td><label>Status: </label></td><td><select class="status-edit visible validate" id="addStatus"></select></td></tr>
+            <tr><td><label>Description: </label></td><td><input type="text" id="addDescription" class="validate" /></td></tr>
+            <tr><td><label>Start Date: </label></td><td><input type="date" id="addStartDate" class="datepicker-custom validate" /></td></tr>
+            <tr><td><label>Due date: </label></td><td><input type="date" id="addEndDate" class="datepicker-custom validate" /></td></tr>
+            <tr><td><label>Estimated Time: </label></td><td><input type="number" id="addEstimateTime" min="0" class="validate" /></td></tr>
+            <tr><td><label>Assignee: </label></td><td><select class="assignee-edit visible validate" id="addTaskAssignee"></select></td></tr>
+        </table>
+        <div class="activities">
+            <button id="addTask" onclick="createTask()" class="waves-effect waves-light btn save">Зберегти</button>
+            <button id ="declineAddTask" class="waves-effect waves-light red darken-1 btn decline-add">Відмінити</button>
+        </div>
+    </div>
+    <div class="container body-content" id="content-container">
+        @RenderBody()
+    </div>
+</body>
+</html>
+<script>
+    function concatDate(date) {
+        if (date) {
+            var newDate = date.replace(/T/, ' ');
+            var t = newDate.split(/[- :]/);
+            var d = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5]));
+            d = d.toString()
+            d = d.substr(0,15)
+            return d;
+        }
+        return Date.now()
+    }
+
+
+    let modalOnLog = $('.modal-log');
+    let taskCreate = $('#modal3');
+
+
+    $("#btn-log").on("click", function () {
+        modalOnLog.css("display", "block")
+        modalOnLog.modal()
+    });
+
+    function createTopTask() {
+       taskCreate.css("display", "block")
+        taskCreate.modal()
+    };
+
+    $("#addLog").on("click", function () {
+        AddLog()
+    })
+
+
+    $(".decline-add, #declineAddTask, #addTask").on("click", function (event) {
+        modalOnLog.css("display", "none")
+        taskCreate.css("display", "none")
+        $(".modal-backdrop").css("display","none")
+    
+    })
+
+    getFullTaskList()
+    makeUserFriendlyData()
+
+    function getFullTaskList() {
+
+        $.ajax({
+            url: '/api/tasks',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                SubstituteTasks(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+    function SubstituteTasks(data) {
+        let strOptions = '';
+        data.forEach((item, i, arr) => {
+            strOptions += "<option value ='" + item.ID + "'>" + item.Summary + "</option>"
+        })
+        $("#addTaskTable").html(strOptions);
+    }
+
+
+    function AddLog() {
+        var log = {
+            Time: $('#addTime').val(),
+            TaskID: $('#addTaskTable').val(),
+            Person: $('#addPerson').text(),
+            TimeStamp: $('#addTimeLogged').val(),
+
+        };
+
+        $.ajax({
+            url: '/api/timelogs/',
+            type: 'POST',
+            data: JSON.stringify(log),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                console.log(data)
+                window.location.href = "/Home/Index";
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+        modalOnCreate.modal('close')
+    }
+
+    function Logout() {
+        window.location.href = "/Account/Logout"
+    }
+
+    function makeUserFriendlyData() {
+       
+        $.ajax({
+            url: '/api/projects',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let strOptions = '';
+                data.forEach((item, i, arr) => {
+                    strOptions += "<option value ='" + item.ID + "'>" + item.Summary + "</option>"
+                })
+                $("#addProjectId").html(strOptions);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/projectstatus',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let strOptions = '';
+                data.forEach((item, i, arr) => {
+                    strOptions += "<option value ='" + item.ID + "'>" + item.Name + "</option>"
+                })
+                $("#addStatus").html(strOptions);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/people',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log("Asignee" + data)
+                let strOptions = '';
+                data.forEach((item, i, arr) => {
+                    strOptions += "<option value ='" + item.ID + "'>" + item.Login + "</option>"
+                })
+                $("#addTaskAssignee").html(strOptions);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/tasktypes',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let strOptions = '';
+                data.forEach((item, i, arr) => {
+                    strOptions += "<option value ='" + item.ID + "'>" + item.Name + "</option>"
+                })
+                $("#addType").html(strOptions);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/taskpriorities',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let strOptions = '';
+                data.forEach((item, i, arr) => {
+                    strOptions += "<option value ='" + item.ID + "'>" + item.Name + "</option>"
+                })
+                $("#addPriority").html(strOptions);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function createTask() {
+    
+        var task = {
+            ProjectID: $('#addProjectId').val(),
+            Summary: $('#addSummary').val(),
+            Type: $('#addType').val(),
+            Priority: $('#addPriority').val(),
+            Status: $('#addStatus').val(),
+            Description: $('#addDescription').val(),
+            Created: $('#addStartDate').val(),
+            DueDate: $('#addEndDate').val(),
+            Estimated: $('#addEstimateTime').val(),
+            AsigneeID: $('#addTaskAssignee').val(),
+        };
+        console.log(task)
+        $.ajax({
+            url: '/api/tasks/',
+            type: 'POST',
+            data: JSON.stringify(task),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                getFullTaskList()
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+    </script>

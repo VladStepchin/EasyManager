@@ -1,0 +1,528 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="EasyManagerModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="C__MigrationHistory">
+    <Key>
+      <PropertyRef Name="MigrationId" />
+      <PropertyRef Name="ContextKey" />
+    </Key>
+    <Property Name="MigrationId" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ContextKey" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Model" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+    <Property Name="ProductVersion" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Person">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Login" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="RoleID" Type="Int32" />
+    <Property Name="RememberMe" Type="Boolean" />
+    <Property Name="Logged" Type="Int32" />
+    <NavigationProperty Name="Role" Relationship="Self.FK__Person__RoleID__1AD3FDA4" FromRole="Person" ToRole="Role" />
+    <NavigationProperty Name="Role1" Relationship="Self.FK__Person__RoleID__60A75C0F" FromRole="Person" ToRole="Role" />
+    <NavigationProperty Name="PersonProjectRelations" Relationship="Self.FK__PersonPro__Perso__3A81B327" FromRole="Person" ToRole="PersonProjectRelation" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK__Task__AsigneeID__151B244E" FromRole="Person" ToRole="Task" />
+    <NavigationProperty Name="Tasks1" Relationship="Self.FK__Task__AsigneeID__31EC6D26" FromRole="Person" ToRole="Task" />
+    <NavigationProperty Name="TaskComments" Relationship="Self.FK__TaskComme__Perso__36B12243" FromRole="Person" ToRole="TaskComments" />
+  </EntityType>
+  <EntityType Name="PersonProjectRelation">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="PersonID" Type="Int32" Nullable="false" />
+    <Property Name="ProjectID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Person" Relationship="Self.FK__PersonPro__Perso__3A81B327" FromRole="PersonProjectRelation" ToRole="Person" />
+    <NavigationProperty Name="Project" Relationship="Self.FK__PersonPro__Proje__3B75D760" FromRole="PersonProjectRelation" ToRole="Project" />
+  </EntityType>
+  <EntityType Name="Project">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Summary" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="DateStart" Type="DateTime" Precision="3" />
+    <Property Name="DateEnd" Type="DateTime" Precision="3" />
+    <Property Name="Status" Type="Int32" Nullable="false" />
+    <Property Name="Owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Logged" Type="Int32" />
+    <Property Name="Estimated" Type="Int32" />
+    <NavigationProperty Name="PersonProjectRelations" Relationship="Self.FK__PersonPro__Proje__3B75D760" FromRole="Project" ToRole="PersonProjectRelation" />
+    <NavigationProperty Name="ProjectStatu" Relationship="Self.FK__Project__Status__1DB06A4F" FromRole="Project" ToRole="ProjectStatus" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK__Task__ProjectID__17036CC0" FromRole="Project" ToRole="Task" />
+    <NavigationProperty Name="Tasks1" Relationship="Self.FK__Task__ProjectID__300424B4" FromRole="Project" ToRole="Task" />
+    <NavigationProperty Name="TimeLogs" Relationship="Self.FK__TimeLog__Project__02FC7413" FromRole="Project" ToRole="TimeLog" />
+  </EntityType>
+  <EntityType Name="ProjectStatu">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Projects" Relationship="Self.FK__Project__Status__1DB06A4F" FromRole="ProjectStatus" ToRole="Project" />
+  </EntityType>
+  <EntityType Name="Role">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="People" Relationship="Self.FK__Person__RoleID__1AD3FDA4" FromRole="Role" ToRole="Person" />
+    <NavigationProperty Name="People1" Relationship="Self.FK__Person__RoleID__60A75C0F" FromRole="Role" ToRole="Person" />
+  </EntityType>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="Task">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProjectID" Type="Int32" Nullable="false" />
+    <Property Name="Summary" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Created" Type="DateTime" Precision="3" />
+    <Property Name="DueDate" Type="DateTime" Precision="3" />
+    <Property Name="Status" Type="Int32" />
+    <Property Name="AsigneeID" Type="Int32" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Logged" Type="Int32" />
+    <Property Name="Estimated" Type="Int32" />
+    <Property Name="Type" Type="Int32" />
+    <Property Name="Priority" Type="Int32" />
+    <NavigationProperty Name="Person" Relationship="Self.FK__Task__AsigneeID__151B244E" FromRole="Task" ToRole="Person" />
+    <NavigationProperty Name="Person1" Relationship="Self.FK__Task__AsigneeID__31EC6D26" FromRole="Task" ToRole="Person" />
+    <NavigationProperty Name="Project" Relationship="Self.FK__Task__ProjectID__17036CC0" FromRole="Task" ToRole="Project" />
+    <NavigationProperty Name="Project1" Relationship="Self.FK__Task__ProjectID__300424B4" FromRole="Task" ToRole="Project" />
+    <NavigationProperty Name="TaskPriority" Relationship="Self.FK__Task__Priority__160F4887" FromRole="Task" ToRole="TaskPriority" />
+    <NavigationProperty Name="TaskPriority1" Relationship="Self.FK__Task__Priority__33D4B598" FromRole="Task" ToRole="TaskPriority" />
+    <NavigationProperty Name="TaskStatu" Relationship="Self.FK__Task__Status__17F790F9" FromRole="Task" ToRole="TaskStatus" />
+    <NavigationProperty Name="TaskStatu1" Relationship="Self.FK__Task__Status__30F848ED" FromRole="Task" ToRole="TaskStatus" />
+    <NavigationProperty Name="TaskType" Relationship="Self.FK__Task__Type__18EBB532" FromRole="Task" ToRole="TaskType" />
+    <NavigationProperty Name="TaskType1" Relationship="Self.FK__Task__Type__32E0915F" FromRole="Task" ToRole="TaskType" />
+    <NavigationProperty Name="TaskComments" Relationship="Self.FK__TaskComme__TaskI__37A5467C" FromRole="Task" ToRole="TaskComments" />
+    <NavigationProperty Name="TimeLogs" Relationship="Self.FK__TimeLog__TaskID__03F0984C" FromRole="Task" ToRole="TimeLog" />
+  </EntityType>
+  <EntityType Name="TaskComment">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Date" Type="DateTime" Precision="3" />
+    <Property Name="Content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="PersonID" Type="Int32" Nullable="false" />
+    <Property Name="TaskID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Person" Relationship="Self.FK__TaskComme__Perso__36B12243" FromRole="TaskComments" ToRole="Person" />
+    <NavigationProperty Name="Task" Relationship="Self.FK__TaskComme__TaskI__37A5467C" FromRole="TaskComments" ToRole="Task" />
+  </EntityType>
+  <EntityType Name="TaskPriority">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK__Task__Priority__160F4887" FromRole="TaskPriority" ToRole="Task" />
+    <NavigationProperty Name="Tasks1" Relationship="Self.FK__Task__Priority__33D4B598" FromRole="TaskPriority" ToRole="Task" />
+  </EntityType>
+  <EntityType Name="TaskStatu">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK__Task__Status__17F790F9" FromRole="TaskStatus" ToRole="Task" />
+    <NavigationProperty Name="Tasks1" Relationship="Self.FK__Task__Status__30F848ED" FromRole="TaskStatus" ToRole="Task" />
+  </EntityType>
+  <EntityType Name="TaskType">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK__Task__Type__18EBB532" FromRole="TaskType" ToRole="Task" />
+    <NavigationProperty Name="Tasks1" Relationship="Self.FK__Task__Type__32E0915F" FromRole="TaskType" ToRole="Task" />
+  </EntityType>
+  <EntityType Name="TimeLog">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Time" Type="Int32" />
+    <Property Name="ProjectID" Type="Int32" />
+    <Property Name="TaskID" Type="Int32" />
+    <Property Name="TimeStamp" Type="DateTime" Precision="3" />
+    <Property Name="Person" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Project" Relationship="Self.FK__TimeLog__Project__02FC7413" FromRole="TimeLog" ToRole="Project" />
+    <NavigationProperty Name="Task" Relationship="Self.FK__TimeLog__TaskID__03F0984C" FromRole="TimeLog" ToRole="Task" />
+  </EntityType>
+  <Association Name="FK__Person__RoleID__1AD3FDA4">
+    <End Role="Role" Type="Self.Role" Multiplicity="0..1" />
+    <End Role="Person" Type="Self.Person" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Role">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Person">
+        <PropertyRef Name="RoleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Person__RoleID__60A75C0F">
+    <End Role="Role" Type="Self.Role" Multiplicity="0..1" />
+    <End Role="Person" Type="Self.Person" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Role">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Person">
+        <PropertyRef Name="RoleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__PersonPro__Perso__3A81B327">
+    <End Role="Person" Type="Self.Person" Multiplicity="1" />
+    <End Role="PersonProjectRelation" Type="Self.PersonProjectRelation" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Person">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="PersonProjectRelation">
+        <PropertyRef Name="PersonID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__AsigneeID__151B244E">
+    <End Role="Person" Type="Self.Person" Multiplicity="1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Person">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="AsigneeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__AsigneeID__31EC6D26">
+    <End Role="Person" Type="Self.Person" Multiplicity="1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Person">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="AsigneeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__TaskComme__Perso__36B12243">
+    <End Role="Person" Type="Self.Person" Multiplicity="1" />
+    <End Role="TaskComments" Type="Self.TaskComment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Person">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="TaskComments">
+        <PropertyRef Name="PersonID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__PersonPro__Proje__3B75D760">
+    <End Role="Project" Type="Self.Project" Multiplicity="1" />
+    <End Role="PersonProjectRelation" Type="Self.PersonProjectRelation" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Project">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="PersonProjectRelation">
+        <PropertyRef Name="ProjectID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Project__Status__1DB06A4F">
+    <End Role="ProjectStatus" Type="Self.ProjectStatu" Multiplicity="1" />
+    <End Role="Project" Type="Self.Project" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ProjectStatus">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Project">
+        <PropertyRef Name="Status" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__ProjectID__17036CC0">
+    <End Role="Project" Type="Self.Project" Multiplicity="1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Project">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="ProjectID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__ProjectID__300424B4">
+    <End Role="Project" Type="Self.Project" Multiplicity="1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Project">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="ProjectID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__TimeLog__Project__02FC7413">
+    <End Role="Project" Type="Self.Project" Multiplicity="0..1" />
+    <End Role="TimeLog" Type="Self.TimeLog" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Project">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="TimeLog">
+        <PropertyRef Name="ProjectID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__Priority__160F4887">
+    <End Role="TaskPriority" Type="Self.TaskPriority" Multiplicity="0..1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TaskPriority">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="Priority" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__Priority__33D4B598">
+    <End Role="TaskPriority" Type="Self.TaskPriority" Multiplicity="0..1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TaskPriority">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="Priority" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__Status__17F790F9">
+    <End Role="TaskStatus" Type="Self.TaskStatu" Multiplicity="0..1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TaskStatus">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="Status" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__Status__30F848ED">
+    <End Role="TaskStatus" Type="Self.TaskStatu" Multiplicity="0..1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TaskStatus">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="Status" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__Type__18EBB532">
+    <End Role="TaskType" Type="Self.TaskType" Multiplicity="0..1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TaskType">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="Type" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Task__Type__32E0915F">
+    <End Role="TaskType" Type="Self.TaskType" Multiplicity="0..1" />
+    <End Role="Task" Type="Self.Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TaskType">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="Type" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__TaskComme__TaskI__37A5467C">
+    <End Role="Task" Type="Self.Task" Multiplicity="1" />
+    <End Role="TaskComments" Type="Self.TaskComment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Task">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="TaskComments">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__TimeLog__TaskID__03F0984C">
+    <End Role="Task" Type="Self.Task" Multiplicity="0..1" />
+    <End Role="TimeLog" Type="Self.TimeLog" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Task">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="TimeLog">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="EasyManagerEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="C__MigrationHistory" EntityType="Self.C__MigrationHistory" />
+    <EntitySet Name="People" EntityType="Self.Person" />
+    <EntitySet Name="PersonProjectRelations" EntityType="Self.PersonProjectRelation" />
+    <EntitySet Name="Projects" EntityType="Self.Project" />
+    <EntitySet Name="ProjectStatus" EntityType="Self.ProjectStatu" />
+    <EntitySet Name="Roles" EntityType="Self.Role" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+    <EntitySet Name="Tasks" EntityType="Self.Task" />
+    <EntitySet Name="TaskComments" EntityType="Self.TaskComment" />
+    <EntitySet Name="TaskPriorities" EntityType="Self.TaskPriority" />
+    <EntitySet Name="TaskStatus" EntityType="Self.TaskStatu" />
+    <EntitySet Name="TaskTypes" EntityType="Self.TaskType" />
+    <EntitySet Name="TimeLogs" EntityType="Self.TimeLog" />
+    <AssociationSet Name="FK__Person__RoleID__1AD3FDA4" Association="Self.FK__Person__RoleID__1AD3FDA4">
+      <End Role="Role" EntitySet="Roles" />
+      <End Role="Person" EntitySet="People" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Person__RoleID__60A75C0F" Association="Self.FK__Person__RoleID__60A75C0F">
+      <End Role="Role" EntitySet="Roles" />
+      <End Role="Person" EntitySet="People" />
+    </AssociationSet>
+    <AssociationSet Name="FK__PersonPro__Perso__3A81B327" Association="Self.FK__PersonPro__Perso__3A81B327">
+      <End Role="Person" EntitySet="People" />
+      <End Role="PersonProjectRelation" EntitySet="PersonProjectRelations" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__AsigneeID__151B244E" Association="Self.FK__Task__AsigneeID__151B244E">
+      <End Role="Person" EntitySet="People" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__AsigneeID__31EC6D26" Association="Self.FK__Task__AsigneeID__31EC6D26">
+      <End Role="Person" EntitySet="People" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__TaskComme__Perso__36B12243" Association="Self.FK__TaskComme__Perso__36B12243">
+      <End Role="Person" EntitySet="People" />
+      <End Role="TaskComments" EntitySet="TaskComments" />
+    </AssociationSet>
+    <AssociationSet Name="FK__PersonPro__Proje__3B75D760" Association="Self.FK__PersonPro__Proje__3B75D760">
+      <End Role="Project" EntitySet="Projects" />
+      <End Role="PersonProjectRelation" EntitySet="PersonProjectRelations" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Project__Status__1DB06A4F" Association="Self.FK__Project__Status__1DB06A4F">
+      <End Role="ProjectStatus" EntitySet="ProjectStatus" />
+      <End Role="Project" EntitySet="Projects" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__ProjectID__17036CC0" Association="Self.FK__Task__ProjectID__17036CC0">
+      <End Role="Project" EntitySet="Projects" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__ProjectID__300424B4" Association="Self.FK__Task__ProjectID__300424B4">
+      <End Role="Project" EntitySet="Projects" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__TimeLog__Project__02FC7413" Association="Self.FK__TimeLog__Project__02FC7413">
+      <End Role="Project" EntitySet="Projects" />
+      <End Role="TimeLog" EntitySet="TimeLogs" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__Priority__160F4887" Association="Self.FK__Task__Priority__160F4887">
+      <End Role="TaskPriority" EntitySet="TaskPriorities" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__Priority__33D4B598" Association="Self.FK__Task__Priority__33D4B598">
+      <End Role="TaskPriority" EntitySet="TaskPriorities" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__Status__17F790F9" Association="Self.FK__Task__Status__17F790F9">
+      <End Role="TaskStatus" EntitySet="TaskStatus" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__Status__30F848ED" Association="Self.FK__Task__Status__30F848ED">
+      <End Role="TaskStatus" EntitySet="TaskStatus" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__Type__18EBB532" Association="Self.FK__Task__Type__18EBB532">
+      <End Role="TaskType" EntitySet="TaskTypes" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Task__Type__32E0915F" Association="Self.FK__Task__Type__32E0915F">
+      <End Role="TaskType" EntitySet="TaskTypes" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__TaskComme__TaskI__37A5467C" Association="Self.FK__TaskComme__TaskI__37A5467C">
+      <End Role="Task" EntitySet="Tasks" />
+      <End Role="TaskComments" EntitySet="TaskComments" />
+    </AssociationSet>
+    <AssociationSet Name="FK__TimeLog__TaskID__03F0984C" Association="Self.FK__TimeLog__TaskID__03F0984C">
+      <End Role="Task" EntitySet="Tasks" />
+      <End Role="TimeLog" EntitySet="TimeLogs" />
+    </AssociationSet>
+    <FunctionImport Name="sp_alterdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_creatediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_dropdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(EasyManagerModel.sp_helpdiagramdefinition_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(EasyManagerModel.sp_helpdiagrams_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_renamediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="new_diagramname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="sp_upgraddiagrams" />
+  </EntityContainer>
+  <ComplexType Name="sp_helpdiagramdefinition_Result">
+    <Property Type="Int32" Name="version" Nullable="true" />
+    <Property Type="Binary" Name="definition" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="sp_helpdiagrams_Result">
+    <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+    <Property Type="Int32" Name="ID" Nullable="false" />
+    <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+    <Property Type="Int32" Name="OwnerID" Nullable="false" />
+  </ComplexType>
+</Schema>

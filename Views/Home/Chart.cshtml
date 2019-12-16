@@ -1,0 +1,206 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+    <div class="page-content">
+        <div class="interface">
+            <p>Сhoose developer to check performance:</p>
+            <select class="task-edit visible user-dropdown" id="chooseUser"></select>
+            <button id="draw" class="waves-effect waves-light btn save" onclick="makeChart(this)">Make chart</button>
+            <button id="interpolate" class="waves-effect waves-light btn save" onclick='interpolate()'>Interpolate</button>
+        </div>
+        @*<div class="interface">
+            <p>Сhoose developer to check performance:</p>
+            <select class="task-edit visible user-dropdown-2" id="chooseUser-2"></select>
+            <button id="draw" class="waves-effect waves-light btn save" onclick="makeChart(this)">Make chart</button>
+            <button id="interpolate" class="waves-effect waves-light btn save" onclick='interpolate(myLineChart2)'>Interpolate</button>
+        </div>
+        <div class="interface">
+            <p>Сhoose developer to check performance:</p>
+            <select class="task-edit visible user-dropdown-3" id="chooseUser-3"></select>
+            <button id="draw" class="waves-effect waves-light btn save" onclick="makeChart(this)">Make chart</button>
+            <button id="interpolate" class="waves-effect waves-light btn save" onclick='interpolate(myLineChart3)'>Interpolate</button>
+        </div>*@
+        <div class="graph-content">
+
+        </div>
+    </div>
+
+
+<script>
+    var COUNTER = 0, myLineChart = null, myLineChart2 = null, myLineChart3 = null;
+    var APPROXAXIS=[], DATES = [];
+    showUserNames()
+
+
+    $("#draw").on("click", function () {
+        let user = $("#chooseUser").val();
+
+        $.ajax({
+            url: '/api/timelogs/' + user,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (data) {
+               
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    })
+
+    function showUserNames() {
+        $.ajax({
+            url: '/api/people/',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (data) {
+                SubstituteUsers(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function SubstituteUsers(data) {
+        strOptions = '';
+        data.forEach((item, i, arr) => {
+            strOptions += "<option value ='" + item.ID + "'>" + item.Login + "</option>"
+        })
+        $(".user-dropdown").html(strOptions);
+        $(".user-dropdown-2").html(strOptions);
+        $(".user-dropdown-3").html(strOptions);
+    }
+
+    function makeChart(param) {
+        var userID = param.previousSibling.previousSibling.value;
+
+        $.ajax({
+            url: '/api/timelogs/' + userID,
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var axes = getAppropriateData(data)
+                COUNTER++
+                drawChart(axes, COUNTER)
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function makeUserFriendlyDate(date) {
+        return date.substr(0, 10);
+    }
+
+    function getAppropriateData(data) {
+
+        var axes = [];
+
+        var chartLabel = [], uniqueChartDate = [], uniqueChartLabel = [];
+        data.forEach((item, i, arr) => {
+            item.TimeStamp = makeUserFriendlyDate(item.TimeStamp)
+            chartLabel.push(item.TimeStamp);
+        });
+
+        //leave only unique dates
+
+        for (let value of chartLabel) {
+            if (!uniqueChartLabel.includes(value)) {
+                uniqueChartLabel.push(value);
+            }
+        }
+        uniqueChartLabel = uniqueChartLabel.sort(function (a, b) {
+            a = Date.parse(a), b = Date.parse(b);
+            return a - b;
+        })
+
+        uniqueChartDate.length = uniqueChartLabel.length;
+        uniqueChartDate.fill(0, 0, uniqueChartDate.length);
+
+        //create new array with data for the chart
+
+        for (let j = 0; j < uniqueChartLabel.length; j++) {
+            data.forEach((item, i, arr) => {
+                if (uniqueChartLabel[j] == makeUserFriendlyDate(item.TimeStamp)) {
+                    uniqueChartDate[j] += item.Time;
+                }
+            });
+        }
+        axes = [uniqueChartLabel, uniqueChartDate,data[0].Person]
+
+        return axes;
+    }
+
+    function drawChart(axes, COUNTER) {
+        APPROXAXIS[COUNTER] = axes[1];
+        DATES = axes[0];
+        var chartID = "myChart" + COUNTER;
+        $(".graph-content").append("<div class='chart'><canvas id='" + chartID + "' width='400' height='250' class='actual-chart'></canvas></div>");
+
+         myLineChart = new Chart(chartID, {
+            type: 'line',
+            data: {
+                labels: axes[0],
+                datasets: [{
+                    label: 'Productivity line of ' + axes[2],
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: axes[1],
+                    fill: false,
+                    steppedLine: false
+                }]
+            },
+            options: {}
+        });
+        $(".chart").fadeIn("slow", function () { })
+    }
+
+
+    function interpolate() {
+        APPROXAXIS.splice(0, 1)
+        debugger
+        var yAxis = [];
+        for (var m = 0; m < APPROXAXIS[0].length; m++) {
+            var tmp = 0;
+            for (var n = 0; n < APPROXAXIS.length; n++) {
+                tmp += APPROXAXIS[n][m];
+            }
+            yAxis[m] = tmp / APPROXAXIS.length;
+        }
+
+        //average
+        yAxis[yAxis.length] = yAxis.reduce((a, b) => (a + b)) / yAxis.length;
+        DATES[DATES.length] = 'Next working day';
+
+        var chartID = "myChart" + ++COUNTER;
+        $(".graph-content").append("<div class='chart'><canvas id='" + chartID + "' width='400' height='250' class='actual-chart'></canvas></div>");
+
+        myLineChart = new Chart(chartID, {
+            type: 'line',
+            data: {
+                labels: DATES,
+                datasets: [{
+                    label: 'Average group productivity',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: yAxis,
+                    fill: false,
+                    steppedLine: false
+                }]
+            },
+            options: {}
+        });
+        $(".chart").fadeIn("slow", function () { })
+    }
+</script>

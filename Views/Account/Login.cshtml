@@ -1,0 +1,138 @@
+﻿@model EasyManager.Models.LoginModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@Styles.Render("~/Content/login.css")
+
+<div class="flip-container">
+        <div class="front">
+            <div id="main-login-form" class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30 modall">
+                <div class="register-text"><span class="rotate-1">Not registered? </span></div>
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    <span class="login100-form-title p-b-37 login-text">
+                        <span style="color:#0b6edc">EasyManager</span>
+                    </span>
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2 login-label" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control login-input" } })                       
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2 login-label" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control login-input" } })                        
+                        </div>
+                    </div>
+
+                    <div id="button-login" class="container-login100-form-btn pos-center">
+                        <button class="login100-form-btn" id="btn-login-1" type="submit">
+                            Sign In
+                        </button>
+                    </div>
+                }
+                </div>
+        </div>
+        <div class="back">
+            <div id="button-login" class="container-login100-form-btn">
+                <div id="main-login-form" class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30 modall">
+                    <div class="register-text"><span class="rotate">Want to login? </span></div>
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+                        <span class="login100-form-title p-b-37 pos-center">
+                            <span style="color:#0b6edc">Sign Up</span>
+                        </span>
+
+                        <table>
+                            <tr class="no-strip"><input type="hidden" id="addId" /></tr>
+                            <tr class="no-strip"><td><label>Name: </label></td><td><input type="text" id="addName" class="custom" /></td></tr>
+                            <tr class="no-strip"><td><label>Email: </label></td><td><input type="email" id="addLogin" class="custom" /></td></tr>
+                            <tr class="no-strip"><td><label>Password: </label></td><td><input type="password" id="addPassword" class="custom" /></td></tr>
+                            <tr class="no-strip">
+                                <td><label>Role: </label></td>
+                                <td>
+                                    <select class="role-add visible" id="addRole"></select>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div id="button-login" class="container-login100-form-btn pos-center">
+                            <button class="login100-form-btn" id="btn-login" type="submit" onclick="AddUser()">
+                                Sign In
+                            </button>
+                        </div>
+                    }
+                    </div>
+
+            </div>
+        </div>
+    </div>
+<style>
+    select{
+        display: block;
+    }
+</style>
+<script>
+
+    $(".register-text").on("click", function () {
+        $(".front").toggle("slow", function () { })
+        $(".back").toggle("slow", function () { })
+    })
+
+    $.ajax({
+        url: '/api/roles/',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            SubstituteRoles(data);
+        },
+        error: function (x, y, z) {
+            alert('Щось пішло не так. Зверніться до розробників сайту');
+            alert(x + '\n' + y + '\n' + z);
+        }
+    });
+
+    function SubstituteRoles(data) {
+        strOptions = '';
+        data.forEach((item, i, arr) => {
+            strOptions += "<option value ='" + item.ID + "'>" + item.Name + "</option>"
+        })
+
+        $("#addRole").html(strOptions)
+
+    }
+
+    function AddUser() {
+        debugger
+        var person = {
+            Name: $('#addName').val(),
+            Login: $('#addLogin').val(),
+            Password: $('#addPassword').val(),
+            RoleID: $('#addRole').val(),
+
+        };
+
+        $.ajax({
+            url: '/api/people/',
+            type: 'POST',
+            data: JSON.stringify(person),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                window.location.href = "/Account/Login";
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+</script>

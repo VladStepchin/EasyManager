@@ -1,0 +1,156 @@
+﻿@model IEnumerable<EasyManager.Task>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+ <div id="tableBlock" class="action-buttons list-of-tasks"></div>
+
+<script>
+
+    $(document).ready(function () {
+        $('.collapsible').collapsible();
+        getTaskList();
+        showUserFriendlyData();
+    });
+   
+    function getTaskList() {
+        $.ajax({
+            url: '/api/tasks/'+ @ViewBag.id,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                showTaskList(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                console.log(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+    function showUserFriendlyData() {
+        $.ajax({
+            url: '/api/projects/' + @ViewBag.id,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyProject(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/taskstatus/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyStatuses(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/taskpriorities/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyPriorities(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+        $.ajax({
+            url: '/api/tasktypes/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyTypes(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+
+
+        $.ajax({
+            url: '/api/people/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                makeUserFriendlyUser(data);
+            },
+            error: function (x, y, z) {
+                alert('Щось пішло не так. Зверніться до розробників сайту');
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+
+
+    function showTaskList(data) {
+        let strResult = "<ul class='collapsible expandable' id='myUL'>";
+        $.each(data, function (index, task) {
+            strResult += "<li><div class='collapsible-header'><p><span class='list-content'><b>Name: </b>" + "      " + task.Summary + "      <b>Assignee: </b><span data-item='" + task.AsigneeID + "' class='assignee-view'></span><b> Status:</b><span data-item='" + task.Status + "' class='status-view chip'></span><b> Logged time: " + task.Logged + "</span></p></div>" +
+                "<div class='collapsible-body'><table><tr><td><b>Project:</b></td><td id='super' class='projectId' data-item='" + task.ProjectID + "' >" +task.ProjectID+"</td></tr>" +
+                "<tr class='no-strip'><td><b>Type:</b></td><td class='type-view' data-item='" + task.Type + "'>" + task.Type + "</td></tr class='no-strip'>" + "<tr><td><b>Priority:</b></td><td class='priority-view' data-item='" + task.Priority + "'>" + task.Priority + "</td></tr>" + "<tr class='no-strip'><td><b>Status:</b></td><td class='status-view' data-item='" + task.Status + "'>" + task.Status + "</td></tr>" + "<tr class='no-strip'><td><b>Desciption:</b></td><td>" + task.Description + "</td></tr>" +
+                "<tr class='no-strip'><td><b>Start date:</b></td><td>" + concatDate(task.Created) + "</td></tr>" + "<tr class='no-strip'><td><b>End date:</b></td><td>" + concatDate(task.DueDate) + "</td></tr class='no-strip'>" + "<tr class='no-strip'><td><b>Estimated time:</b></td><td>" + task.Estimated + "</td></tr>" + "<tr class='no-strip'><td><b>Logged time:</b></td><td>" + task.Logged + "</td></tr>" + "<tr class='no-strip'><td><b>Assignee:</b></td><td class='assignee-view' data-item='" + task.AsigneeID + "'>" + task.AsigneeID + "</td>" +
+                "</table></div></li>";
+        });
+        strResult += "</ul>";
+        $("#tableBlock").html(strResult);
+
+        var elems = document.querySelectorAll('.collapsible');
+        var instances = M.Collapsible.init(elems, { accordion: false });
+    }
+
+    function makeUserFriendlyProject(data) {
+        let listSelector2 = "td[data-item='" + data.ID + "'].projectId";
+        $(listSelector2).html(data.Summary)
+        }
+
+
+    function makeUserFriendlyStatuses(data) {
+        data.forEach((item, i, arr) => {
+            let listSelector = "span[data-item='" + item.ID + "'].status-view";
+            let listSelector2 = "td[data-item='" + item.ID + "'].status-view";
+            console.log(listSelector2)
+            $(listSelector).html(item.Name)
+            $(listSelector2).html(item.Name) 
+        })
+    }
+
+    function makeUserFriendlyPriorities(data) {
+        data.forEach((item, i, arr) => {
+            let listSelector2 = "td[data-item='" + item.ID + "'].priority-view";
+            $(listSelector2).html(item.Name)
+        })
+    }
+
+    function makeUserFriendlyTypes(data) {
+        data.forEach((item, i, arr) => {
+            let listSelector2 = "td[data-item='" + item.ID + "'].type-view";
+            $(listSelector2).html(item.Name)
+        })
+    }
+
+        function makeUserFriendlyUser(data){
+            data.forEach((item, i, arr) => {
+                let listSelector = "span[data-item='" + item.ID + "'].assignee-view";
+                let listSelector2 = "td[data-item='" + item.ID + "'].assignee-view";
+                $(listSelector).html(item.Login)
+                $(listSelector2).html(item.Login)
+            })
+    }
+
+</script>
